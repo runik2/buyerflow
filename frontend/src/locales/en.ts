@@ -1,0 +1,1 @@
+export const en={dashboard:"Dashboard",orders:"Orders",stores:"Stores",currencies:"Currencies & rates",shipping:"Shipping",clients:"Clients",settings:"Settings",audit:"Audit log",empty:"No orders yet"} as const;

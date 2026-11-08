@@ -1,0 +1,1 @@
+export const ru={dashboard:"Дашборд",orders:"Заявки",stores:"Магазины",currencies:"Валюты и курсы",shipping:"Доставка",clients:"Клиенты",settings:"Настройки",audit:"Журнал действий",empty:"Заявок пока нет"} as const;
