@@ -1,0 +1,7 @@
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+exclude = ["test_buyerflow.db"]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
