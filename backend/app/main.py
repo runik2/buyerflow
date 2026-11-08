@@ -242,9 +242,10 @@ async def calculate(data: QuoteIn, db=Depends(get_db)):
 @app.post("/api/v1/orders", response_model=OrderOut)
 async def create_order(data: OrderIn, db=Depends(get_db)):
     result = await quote(db, data)
+    payload = data.model_dump(exclude={"category"})
     item = OrderRequest(
         public_number=f"BF-{secrets.token_hex(4).upper()}",
-        **data.model_dump(),
+        **payload,
         used_rate=result["rate"],
         **{k: result[k] for k in ["product_rub", "shipping", "extra_costs", "total", "shipping_pending"]},
     )
@@ -261,6 +262,21 @@ async def orders(status: str | None = Query(None), db=Depends(get_db), _=Depends
     if status:
         q = q.where(OrderRequest.status == status)
     return (await db.execute(q)).scalars().all()
+
+
+@app.get("/api/v1/orders/export.csv")
+async def export_early(db=Depends(get_db), _=Depends(protected)):
+    items = (await db.execute(select(OrderRequest).order_by(OrderRequest.created_at.desc()))).scalars().all()
+    out = io.StringIO()
+    writer = csv.writer(out)
+    writer.writerow(["Номер", "Клиент", "Товар", "Статус", "Итог", "Создана"])
+    for item in items:
+        writer.writerow([item.public_number, item.client_name, item.product_name, item.status, item.total, item.created_at.isoformat()])
+    return StreamingResponse(
+        iter([out.getvalue().encode("utf-8-sig")]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=buyerflow-orders.csv"},
+    )
 
 
 @app.get("/api/v1/orders/{id}", response_model=OrderOut)

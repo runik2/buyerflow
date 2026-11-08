@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import datetime, timezone
 from decimal import Decimal
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text
@@ -5,7 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 
 
-def now(): return datetime.now(timezone.utc)
+def now():
+    return datetime.now(timezone.utc)
 
 
 class Currency(Base):
@@ -89,4 +91,3 @@ class AuditLog(Base):
     entity_id: Mapped[str] = mapped_column(String(80))
     details: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
-
